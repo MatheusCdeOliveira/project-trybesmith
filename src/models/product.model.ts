@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 // import connection from './connection';
 
 export default class ProductModel {
@@ -13,5 +13,14 @@ export default class ProductModel {
       .connection.execute<RowDataPacket[]>('SELECT * FROM Trybesmith.products');
     const [rows] = result;
     return rows;
+  }
+
+  public async create(name: string, amount: string) {
+    const result = await this.connection.execute<ResultSetHeader>(
+      'INSERT INTO Trybesmith.products (name, amount) VALUES (?, ?)',
+      [name, amount],
+    );
+    const [{ insertId }] = result;
+    return { id: insertId, name, amount };
   }
 }
